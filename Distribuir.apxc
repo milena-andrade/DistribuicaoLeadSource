@@ -1,0 +1,19 @@
+public class Distribuir {
+    
+    @future
+    public static void distribuirUsuariosAsync(List<Id> leadIds){
+        String canalAtendimento = 'atendimento';
+        
+        List<User> usuariosAtendimento = [SELECT Id FROM User WHERE CANAL__c = :canalAtendimento];
+        
+        if (!usuariosAtendimento.isEmpty()) {
+            for (Id leadId : leadIds) {
+                Integer indexUsuario = Math.mod(Math.abs(System.hashCode(leadId)), usuariosAtendimento.size());
+                User usuarioDistribuido = usuariosAtendimento[indexUsuario];
+                
+                Lead leadToUpdate = new Lead(Id = leadId, OwnerId = usuarioDistribuido.Id);
+                update leadToUpdate;
+            }
+        }
+    }
+}
