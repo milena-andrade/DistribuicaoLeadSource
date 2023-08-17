@@ -1,0 +1,18 @@
+trigger LeadTrigger on Lead (after insert) {
+    List<Lead> formularioLeads = new List<Lead>();
+    
+    for (Lead newLead : Trigger.new) {
+        if (newLead.LeadSource == 'formulario') {
+            formularioLeads.add(newLead);
+        }
+    }
+    
+    if (!formularioLeads.isEmpty()) {
+        List<Id> leadIds = new List<Id>();
+        for (Lead lead : formularioLeads) {
+            leadIds.add(lead.Id);
+        }
+        
+        Distribuir.distribuirUsuariosAsync(leadIds);
+    }
+}
